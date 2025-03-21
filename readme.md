@@ -46,4 +46,4 @@ Add "userAddress" : https://chatgpt.com/share/67da4593-e9ac-800c-bca2-adea2466a6
 ContactInfo Pattern: https://stackoverflow.com/questions/3636061/database-design-similar-contact-information-for-multiple-entities 
 Patrones de diseño de bases de datos: https://vertabelo.com/blog/database-design-patterns/ 
 ThirdPartyAuth : https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow (Check endpoints)
-
+ExchangeRate : https://www.exchangerate-api.com (Cambian en grupo)
