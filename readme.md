@@ -47,3 +47,7 @@ ContactInfo Pattern: https://stackoverflow.com/questions/3636061/database-design
 Patrones de diseño de bases de datos: https://vertabelo.com/blog/database-design-patterns/ 
 ThirdPartyAuth : https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow (Check endpoints)
 ExchangeRate : https://www.exchangerate-api.com (Cambian en grupo)
+
+
+cadena de pensamiento: https://platform.openai.com/docs/guides/structured-outputs?api-mode=chat&example=structured-data 
+audio to text: https://platform.openai.com/docs/api-reference/audio/createSpeech 
