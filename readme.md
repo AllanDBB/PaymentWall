@@ -8,6 +8,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
+- [Link script Bases de datos](#Bases_de_Datos)
 ## Integrantes
 Bryan Marín Valverde
 Allan Bolaños
@@ -54,3 +55,5 @@ ExchangeRate : https://www.exchangerate-api.com (Cambian en grupo)
 
 cadena de pensamiento: https://platform.openai.com/docs/guides/structured-outputs?api-mode=chat&example=structured-data 
 audio to text: https://platform.openai.com/docs/api-reference/audio/createSpeech 
+## Bases_de_Datos
+
