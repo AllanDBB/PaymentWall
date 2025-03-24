@@ -1,13 +1,16 @@
 # PaymentWall (Project for Database Course I)
 
 ## Table of Contents
+- [Integrantes](#Integrantes)
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
-
+## Integrantes
+Bryan Marín Valverde
+Allan Bolaños
 ## Introduction
 Provide a brief description of your project, its purpose, and its goals.
 
