@@ -55,5 +55,6 @@ ExchangeRate : https://www.exchangerate-api.com (Cambian en grupo)
 cadena de pensamiento: https://platform.openai.com/docs/guides/structured-outputs?api-mode=chat&example=structured-data 
 audio to text: https://platform.openai.com/docs/api-reference/audio/createSpeech 
 ## Bases_de_Datos
+https://github.com/AllanDBB/PaymentWall/blob/main/Models/Final_version_case_2.mwb
 ## LLenado_datos
 ![image](https://github.com/user-attachments/assets/d5ac587a-a75e-4af0-a0c6-95d64bcfbd15)
