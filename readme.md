@@ -58,3 +58,4 @@ audio to text: https://platform.openai.com/docs/api-reference/audio/createSpeech
 https://github.com/AllanDBB/PaymentWall/blob/main/Models/Final_version_case_2.mwb
 ## LLenado_datos
 ![image](https://github.com/user-attachments/assets/d5ac587a-a75e-4af0-a0c6-95d64bcfbd15)
+Como podemos ver se usa el insert into + la tabla + campos y la funcion values lo que permite insertar 10 registros de una vez
