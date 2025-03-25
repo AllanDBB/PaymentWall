@@ -245,12 +245,13 @@ SELECT * FROM PW_paymentMethods;
 -- modules
 INSERT INTO PW_modules (moduleId, name)
 VALUES
-    (1, 'Usuarios'),
+	(1, 'Usuarios'),
     (2, 'Pagos'),
     (3, 'Reportes'),
     (4, 'Productos'),
     (5, 'Pedidos'),
-    (6, 'Idiomas');
+    (6, 'Idiomas'),
+    (7, 'IA');
 
 SELECT * FROM PW_modules;
 
@@ -1026,3 +1027,279 @@ SELECT
     4;
     
 SELECT * FROM PW_Logs;
+
+-- IA
+INSERT INTO PW_authTypesAI (authTypeId, name) VALUES 
+(1, 'OpenAI'),
+(2, 'Gemini');
+
+-- IA
+INSERT INTO PW_AI (
+    AIAuthId, name, LogoURL, secretKey, organizationName, projectName, PW_AIAuthcol, authTypeAIId, moduleId
+) VALUES 
+(
+    1, 
+    'OpenAI', 
+    'https://example.com/logos/openai.png',
+    UNHEX(SHA2(CONCAT('openai_secret_', RAND()), 256)),
+    'OpenAI Organization',
+    'GPT-4 Turbo',
+    'OPENAI_AUTH',
+    1,
+    7
+),
+(
+    2, 
+    'Gemini', 
+    'https://example.com/logos/gemini.png',
+    UNHEX(SHA2(CONCAT('gemini_secret_', RAND()), 256)),
+    'Google DeepMind',
+    'Gemini Pro',
+    'GEMINI_AUTH',
+    2,
+    7
+);
+
+-- request IA
+INSERT INTO PW_requestAI (
+    requestAIId, model, stream, temperature, requestDate, include, AIId
+)
+SELECT 
+    (@row := @row + 1),
+    CASE 
+        WHEN ai.AIAuthId = 1 THEN 'gpt-4-turbo' 
+        ELSE 'gemini-pro' 
+    END,
+    FLOOR(RAND() * 2),
+    FLOOR(RAND() * 100),
+    NOW() - INTERVAL FLOOR(RAND() * 30) DAY,
+    CASE FLOOR(RAND() * 3)
+        WHEN 0 THEN 'all'
+        WHEN 1 THEN 'partial'
+        ELSE 'minimal'
+    END,
+    ai.AIAuthId
+FROM 
+    PW_AI ai
+CROSS JOIN 
+    (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) AS multiplier
+CROSS JOIN
+    (SELECT @row := 0) r
+WHERE
+    ai.AIAuthId IN (1, 2)
+LIMIT 10;
+
+-- AI Format
+INSERT INTO PW_responseAIFormat (responseFormatId, formatName) VALUES 
+(1, 'JSON'),
+(2, 'XML'),
+(3, 'Texto'),
+(4, 'HTML'),
+(5, 'Markdown');
+
+-- Events
+INSERT INTO PW_eventType (eventTypeId, name, description, action1, action2, specifications) VALUES 
+(1, 'Pago Automático', 'Pago recurrente procesado', 'ejecutar', 'notificar', 'Diario/Semanal/Mensual'),
+(2, 'Recordatorio Pago', 'Recordatorio de pago pendiente', 'alertar', 'posponer', '24h antes del vencimiento'),
+(3, 'Detección Fraude', 'Transacción sospechosa detectada', 'bloquear', 'notificar', 'Umbral 95% confianza'),
+(4, 'Renovación Suscripción', 'Renovación automática de suscripción', 'procesar', 'confirmar', '3 días antes del vencimiento'),
+(5, 'Devolución', 'Proceso de devolución de fondos', 'iniciar', 'verificar', 'Seguir protocolo 345-B');
+
+INSERT INTO PW_eventByAI (eventId, chainId, eventTypeId) VALUES 
+('PAY-001', 1, 1),
+('REM-001', 1, 2),
+('FRA-001', 2, 3),
+('REN-001', 3, 4),
+('REF-001', 2, 5),
+('PAY-002', 4, 1),
+('REM-002', 5, 2),
+('FRA-002', 3, 3),
+('REN-002', 1, 4),
+('REF-002', 4, 5);
+
+-- Systemp prompts
+INSERT INTO PW_systemPrompt (systemPromptId, text) VALUES 
+(1, 'Eres un asistente financiero especializado en procesamiento de pagos. Proporciona respuestas claras y concisas.'),
+(2, 'Eres un analista de fraudes. Examina cuidadosamente cada transacción y marca las sospechosas.'),
+(3, 'Eres un chatbot de soporte al cliente para problemas de facturación y pagos.');
+
+-- speechToText
+SET @min_audio = (SELECT MIN(mediafileId) FROM PW_mediafiles);
+SET @max_audio = (SELECT MAX(mediafileId) FROM PW_mediafiles);
+SET @min_request = (SELECT MIN(requestAIId) FROM PW_requestAI);
+SET @max_request = (SELECT MAX(requestAIId) FROM PW_requestAI);
+
+INSERT INTO PW_speechToText (languageId, audioFileId, formatId, userId, requestId)
+SELECT 
+    FLOOR(1 + RAND() * 5) AS languageId,       -- IDs de idioma 1-5
+    FLOOR(@min_audio + RAND() * (@max_audio - @min_audio + 1)) AS audioFileId, 
+    FLOOR(1 + RAND() * 5) AS formatId,         -- IDs de formato 1-5
+    FLOOR(1 + RAND() * 40) AS userId,          -- IDs de usuario 1-40
+    FLOOR(@min_request + RAND() * (@max_request - @min_request + 1)) AS requestId 
+FROM 
+    (SELECT a.n + b.n * 10 AS num
+     FROM (SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION 
+           SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) a,
+          (SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION 
+           SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) b
+    ) AS numbers
+WHERE num BETWEEN 1 AND 100;
+
+SELECT * FROM PW_speechToText;
+
+
+-- Transcriptions
+SET @min_user = 1;
+SET @max_user = 40;
+SET @min_speech = (SELECT MIN(speechToTextId) FROM PW_speechToText);
+SET @max_speech = (SELECT MAX(speechToTextId) FROM PW_speechToText);
+
+INSERT INTO PW_transcriptions (transcriptionId, userId, speechToTextId, text)
+SELECT 
+    (@row := @row + 1) AS transcriptionId,
+    FLOOR(@min_user + RAND() * (@max_user - @min_user + 1)) AS userId,
+    FLOOR(@min_speech + RAND() * (@max_speech - @min_speech + 1)) AS speechToTextId,
+    CASE 
+        WHEN RAND() < 0.7 THEN 
+            CASE FLOOR(RAND() * 6)
+                WHEN 0 THEN CONCAT('Quiero pagar mi factura de ', FLOOR(10 + RAND() * 500), ' dólares')
+                WHEN 1 THEN CONCAT('Reporto un problema con mi transacción #', FLOOR(1000 + RAND() * 9000))
+                WHEN 2 THEN '¿Cómo cambio mi método de pago?'
+                WHEN 3 THEN 'Necesito ayuda con un reembolso'
+                WHEN 4 THEN CONCAT('Recibí un cargo duplicado por ', FLOOR(5 + RAND() * 200), ' dólares')
+                ELSE 'Mi suscripción no se canceló correctamente'
+            END
+        ELSE  -- 30% con errores
+            CASE FLOOR(RAND() * 4)
+                WHEN 0 THEN CONCAT('Problema con... [inaudible] ...pago de ', FLOOR(10 + RAND() * 500), '... [corte]')
+                WHEN 1 THEN '[Ruido de fondo] Quiero cance... [ininteligible] ...suscripción'
+                WHEN 2 THEN '*Estático* reporto *estático* cargo no *estático* reconocido'
+                ELSE '...[silbido]... ayuda con ...[distorsión]... factura ...[corte]'
+            END
+    END AS text
+FROM 
+    (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION
+     SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) AS t
+CROSS JOIN 
+    (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION
+     SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) AS m
+CROSS JOIN
+    (SELECT @row := 0) AS r
+LIMIT 100;
+
+INSERT INTO PW_userPrompt (userPromptId, transcriptionId)
+SELECT 
+    (@row2 := @row2 + 1) AS userPromptId,
+    transcriptionId
+FROM 
+    PW_transcriptions
+CROSS JOIN
+    (SELECT @row2 := 0) AS r2
+LIMIT 100;
+
+SELECT * FROM PW_transcriptions;
+
+-- Chain of Thought
+INSERT INTO PW_chainOfThought (chainId, requestId, responseFormatId, userPromptId, systemPromptId, response)
+SELECT 
+    (@row := @row + 1) AS chainId,
+    r.requestAIId AS requestId,
+    FLOOR(1 + RAND() * 5) AS responseFormatId,  -- Formatos 1-5
+    up.userPromptId,
+    FLOOR(1 + RAND() * 3) AS systemPromptId,    -- System Prompts 1-3
+    JSON_OBJECT(
+        'analysis', CASE 
+            WHEN r.model LIKE '%gpt%' THEN 'Análisis realizado por modelo GPT'
+            ELSE 'Análisis realizado por modelo Gemini'
+        END,
+        'steps', JSON_ARRAY(
+            'Paso 1: Interpretación de la solicitud',
+            'Paso 2: Validación de parámetros',
+            'Paso 3: Procesamiento central',
+            'Paso 4: Generación de respuesta'
+        ),
+        'conclusion', CASE 
+            WHEN RAND() > 0.3 THEN 'Operación completada satisfactoriamente'
+            ELSE 'Operación completada con observaciones'
+        END,
+        'timestamp', NOW() - INTERVAL FLOOR(RAND() * 30) DAY
+    ) AS response
+FROM 
+    PW_requestAI r
+JOIN 
+    PW_userPrompt up ON up.userPromptId = FLOOR(1 + RAND() * 100)  -- IDs 1-100
+JOIN
+    (SELECT @row := 0) AS row_counter
+LIMIT 50;
+
+SELECT * FROM PW_chainOfThought;
+
+-- Events by AI
+INSERT INTO PW_eventByAI (eventId, chainId, eventTypeId)
+SELECT 
+    CONCAT('EVT-', 
+           DATE_FORMAT(NOW(), '%Y%m%d'), 
+           '-', 
+           LPAD(@row := @row + 1, 4, '0')) AS eventId,
+    c.chainId,
+    CASE 
+        WHEN c.response->>'$.conclusion' LIKE '%satisfactoriamente%' THEN 1  
+        WHEN c.response->>'$.conclusion' LIKE '%observaciones%' THEN 3      
+        ELSE FLOOR(1 + RAND() * 5)                                         
+    END AS eventTypeId
+FROM 
+    PW_chainOfThought c
+CROSS JOIN 
+    (SELECT @row := 0) AS r
+ORDER BY 
+    RAND()
+LIMIT 50;
+
+
+-- Interactions
+INSERT INTO PW_interactionByAI (
+    interactionId, eventId, contactInfoId, userId, 
+    transactionId, paymentId, addressId, companyAddressId, 
+    moduleId, interactiontStartDate, interactionEndDate, checksum
+)
+SELECT
+    (@row := @row + 1) AS interactionId,
+    e.eventId,
+    ci.contactInfoId,
+    u.userId,
+    t.transactionId,
+    p.paymentId,
+    a.addressId,
+    ca.companyAddressId,
+    CASE 
+        WHEN e.eventTypeId = 1 THEN 2  -- Module 2 for payments
+        WHEN e.eventTypeId = 3 THEN 5  -- Module 5 for fraud detection
+        ELSE FLOOR(1 + RAND() * 10)    -- Other random modules
+    END AS moduleId,
+    NOW() - INTERVAL FLOOR(RAND() * 30) DAY AS interactiontStartDate,
+    NOW() - INTERVAL FLOOR(RAND() * 29) DAY AS interactionEndDate,
+    UNHEX(SHA2(CONCAT(
+        COALESCE(e.eventId, ''),
+        COALESCE(ci.contactInfoId, ''),
+        COALESCE(u.userId, ''),
+        COALESCE(t.transactionId, ''),
+        COALESCE(p.paymentId, ''),
+        COALESCE(a.addressId, ''),
+        COALESCE(ca.companyAddressId, ''),
+        RAND()
+    ), 256)) AS checksum
+FROM
+    PW_eventByAI e
+INNER JOIN (SELECT contactInfoId FROM PW_contactInfo ORDER BY RAND() LIMIT 100) ci ON 1=1
+INNER JOIN (SELECT userId FROM PW_users ORDER BY RAND() LIMIT 100) u ON 1=1
+INNER JOIN (SELECT transactionId FROM PW_transactions ORDER BY RAND() LIMIT 100) t ON 1=1
+INNER JOIN (SELECT paymentId FROM PW_Payments ORDER BY RAND() LIMIT 100) p ON 1=1
+INNER JOIN (SELECT addressId FROM PW_address ORDER BY RAND() LIMIT 100) a ON 1=1
+INNER JOIN (SELECT companyAddressId FROM PW_companyAddress ORDER BY RAND() LIMIT 100) ca ON 1=1
+CROSS JOIN (SELECT @row := 0) r
+LIMIT 100;
+
+SELECT * FROM PW_interactionByAI;
+
+-- Vea señores Manuelito y Don Rodrigo, yo llené todo, yo ya no quiero ver más SQL, he visto 102010290 de páginas de stack overflow, deepseek ya no me quiere, y creo que me hice experto en SQL
+-- Ya no veo código, ahora veo SQL, que dios bendiga SQL y que no se repita. (No sabía si había que llenar todo, pero bueno, para mí tiene sentido todo lo que añadí)
