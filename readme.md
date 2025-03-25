@@ -10,12 +10,13 @@
 - [Contact](#contact)
 - [Link script Bases de datos](#Bases_de_Datos)
 - [link llenado de datos](#LLenado_datos)
+- [Link script de consultas](#Scrip_consultas)
 ## Integrantes
 Bryan Marín Valverde
 Allan Bolaños
 ## Introduction
 Provide a brief description of your project, its purpose, and its goals.
-
+La toda la base de datos está llena.
 ## Installation
 
 First of all:
@@ -115,3 +116,4 @@ https://github.com/AllanDBB/PaymentWall/blob/main/Models/Final_version_case_2.mw
 ## LLenado_datos
 ![image](https://github.com/user-attachments/assets/d5ac587a-a75e-4af0-a0c6-95d64bcfbd15)
 Como podemos ver se usa el insert into + la tabla + campos y la funcion values lo que permite insertar 10 registros de una vez
+## Scrip_consultas
