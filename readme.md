@@ -117,3 +117,16 @@ https://github.com/AllanDBB/PaymentWall/blob/main/Models/Final_version_case_2.mw
 ![image](https://github.com/user-attachments/assets/d5ac587a-a75e-4af0-a0c6-95d64bcfbd15)
 Como podemos ver se usa el insert into + la tabla + campos y la funcion values lo que permite insertar 10 registros de una vez
 ## Scrip_consultas
+listar todos los usuarios de la plataforma que esten activos con su nombre completo,
+--  email, país de procedencia, y el total de cuánto han pagado en subscripciones desde el 2024 hasta el día de hoy, dicho monto debe ser en colones (20+ registros)
+
+![image](https://github.com/user-attachments/assets/a7de8a01-0901-4f39-be1d-0c3d0891e73c)
+-- listar todas las personas con su nombre completo e email, los cuales le queden menos de 15 días para tener que volver a pagar una nueva subscripción (13+ registros)
+![image](https://github.com/user-attachments/assets/08f8ed5e-7c45-4b3a-81d9-5cc553e15e90)
+-- un ranking del top 15 de usuarios que más uso le dan a la aplicación y el top 15 que menos uso le dan a la aplicación (15 y 15 registros)
+
+-- Más usuarios
+![image](https://github.com/user-attachments/assets/d79cf9ac-39cb-400e-8ff4-03200645f70a)
+![image](https://github.com/user-attachments/assets/6f8fe6b3-1d08-4056-86e8-25005b9312cc)
+
+
