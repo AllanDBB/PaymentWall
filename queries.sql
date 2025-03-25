@@ -1,6 +1,5 @@
 -- listar todos los usuarios de la plataforma que esten activos con su nombre completo,
 --  email, país de procedencia, y el total de cuánto han pagado en subscripciones desde el 2024 hasta el día de hoy, dicho monto debe ser en colones (20+ registros)
-
 SELECT 
     CONCAT(u.firstName, ' ', u.lastName) AS fullName,
     u.email,
@@ -55,6 +54,12 @@ ORDER BY
 
 -- un ranking del top 15 de usuarios que más uso le dan a la aplicación y el top 15 que menos uso le dan a la aplicación (15 y 15 registros)
 
+SELECT 'PW_users' AS tabla, COUNT(*) AS total FROM PW_users
+UNION ALL
+SELECT 'PW_Payments', COUNT(*) FROM PW_Payments
+UNION ALL
+SELECT 'PW_transactions', COUNT(*) FROM PW_transactions;
+
 -- Más usuarios
 SELECT 
     u.userId,
@@ -92,7 +97,41 @@ ORDER BY
 LIMIT 15;
 
 
+-- 4.4 determinar cuáles son los análisis donde más está fallando la AI, encontrar los casos, situaciones, interpretaciones, halucinaciones o errores donde el usuario está teniendo más problemas en hacer que la AI determine correctamente lo que se desea hacer, rankeando cada problema de mayor a menor cantidad de ocurrencias entre un rango de fechas (30+ registros)
 
-
+SELECT 
+    CASE 
+        WHEN description LIKE '%falso positivo%' THEN 'Falso positivo en fraude'
+        WHEN description LIKE '%falso negativo%' THEN 'Falso negativo en fraude'
+        WHEN description LIKE '%recomendación inválida%' THEN 'Recomendación inválida'
+        WHEN description LIKE '%Sesgo racial%' THEN 'Sesgo racial detectado'
+        WHEN description LIKE '%Sesgo detectado%' THEN 'Sesgo en modelo'
+        WHEN description LIKE '%carga de modelo%' THEN 'Error carga modelo'
+        WHEN description LIKE '%conectividad%' THEN 'Problema de conectividad'
+        WHEN description LIKE '%tiempo de respuesta%' THEN 'Tiempo de respuesta excedido'
+        WHEN description LIKE '%preprocesamiento%' THEN 'Error preprocesamiento'
+        WHEN description LIKE '%reentrenamiento%' THEN 'Necesidad reentrenamiento'
+        ELSE 'Otro error'
+    END AS tipo_fallo,
+    COUNT(*) AS cantidad_ocurrencias,
+    AVG(CASE WHEN logSeverityId = 2 THEN 1 ELSE 0 END) * 100 AS porcentaje_advertencias,
+    AVG(CASE WHEN logSeverityId = 3 THEN 1 ELSE 0 END) * 100 AS porcentaje_errores,
+    AVG(CASE WHEN logSeverityId = 4 THEN 1 ELSE 0 END) * 100 AS porcentaje_criticos,
+    MIN(posttime) AS primera_ocurrencia,
+    MAX(posttime) AS ultima_ocurrencia,
+    GROUP_CONCAT(DISTINCT 
+        CASE 
+            WHEN description LIKE '%falso positivo%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(value1, 'Confianza:', -1), '%', 1)
+            WHEN description LIKE '%recomendación inválida%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(value1, 'Recomendación inválida:', -1), ',', 1)
+            WHEN description LIKE '%Sesgo%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(value1, 'categoría:', -1), ',', 1)
+            ELSE SUBSTRING(value1, 1, 30)
+        END
+    SEPARATOR ' | ') AS detalles_clave
+FROM 
+    (SELECT * FROM PW_Logs WHERE logSourcesId = 5) AS logs_ia
+GROUP BY 
+    tipo_fallo
+ORDER BY 
+    cantidad_ocurrencias DESC;
 
 
