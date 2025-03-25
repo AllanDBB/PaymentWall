@@ -1303,3 +1303,61 @@ SELECT * FROM PW_interactionByAI;
 
 -- Vea señores Manuelito y Don Rodrigo, yo llené todo, yo ya no quiero ver más SQL, he visto 102010290 de páginas de stack overflow, deepseek ya no me quiere, y creo que me hice experto en SQL
 -- Ya no veo código, ahora veo SQL, que dios bendiga SQL y que no se repita. (No sabía si había que llenar todo, pero bueno, para mí tiene sentido todo lo que añadí)
+
+
+-- update 2: soy un manco y no leí que costarica importaba jajan't
+-- Add Costa Rica to countries (using countryId 11 to follow your sequence)
+INSERT INTO PW_countries (countryId, name, isoCode, phoneCode)
+VALUES
+    (11, 'Costa Rica', 'CR', '+506');
+
+-- Add a state for Costa Rica (San José is the capital province)
+INSERT INTO PW_states (name, countryId)
+VALUES
+    ('San José', 11);
+
+-- Add the capital city (San José) for Costa Rica
+INSERT INTO PW_cities (name, stateId)
+VALUES
+    ('San José', (SELECT stateId FROM PW_states WHERE name = 'San José' AND countryId = 11));
+
+-- Add Costa Rican Colón currency
+INSERT INTO PW_currency (name, acronym, symbol, countryId)
+VALUES
+    ('Costa Rican Colón', 'CRC', '₡', 11);
+
+-- Add some exchange rates for CRC (Colón Costarricense)
+INSERT INTO PW_exchangeRate (startDate, changeDate, PW_exchangeRatecol, enabled, currentChange, baseCurrencyId, conversionCurrencyId)
+SELECT 
+    NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS startDate,
+    NOW() AS changeDate,
+    CONCAT(c1.acronym, '_TO_', c2.acronym) AS PW_exchangeRatecol,
+    1 AS enabled,
+    CASE WHEN RAND() > 0.5 THEN 1 ELSE 0 END AS currentChange,
+    c1.currencyId AS baseCurrencyId,
+    c2.currencyId AS conversionCurrencyId
+FROM 
+    PW_currency c1
+CROSS JOIN 
+    PW_currency c2
+WHERE 
+    c1.acronym = 'CRC' AND c2.acronym != 'CRC'
+LIMIT 5;
+
+-- Also add some rates where CRC is the target currency
+INSERT INTO PW_exchangeRate (startDate, changeDate, PW_exchangeRatecol, enabled, currentChange, baseCurrencyId, conversionCurrencyId)
+SELECT 
+    NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS startDate,
+    NOW() AS changeDate,
+    CONCAT(c1.acronym, '_TO_', c2.acronym) AS PW_exchangeRatecol,
+    1 AS enabled,
+    CASE WHEN RAND() > 0.5 THEN 1 ELSE 0 END AS currentChange,
+    c1.currencyId AS baseCurrencyId,
+    c2.currencyId AS conversionCurrencyId
+FROM 
+    PW_currency c1
+CROSS JOIN 
+    PW_currency c2
+WHERE 
+    c2.acronym = 'CRC' AND c1.acronym != 'CRC'
+LIMIT 5;
