@@ -9,6 +9,7 @@
 - [License](#license)
 - [Contact](#contact)
 - [Link script Bases de datos](#Bases_de_Datos)
+- [link llenado de datos](#LLenado_datos)
 ## Integrantes
 Bryan Marín Valverde
 Allan Bolaños
@@ -51,11 +52,8 @@ ContactInfo Pattern: https://stackoverflow.com/questions/3636061/database-design
 Patrones de diseño de bases de datos: https://vertabelo.com/blog/database-design-patterns/ 
 ThirdPartyAuth : https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow (Check endpoints)
 ExchangeRate : https://www.exchangerate-api.com (Cambian en grupo)
-
-![image](https://github.com/user-attachments/assets/d5ac587a-a75e-4af0-a0c6-95d64bcfbd15)
-
-
 cadena de pensamiento: https://platform.openai.com/docs/guides/structured-outputs?api-mode=chat&example=structured-data 
 audio to text: https://platform.openai.com/docs/api-reference/audio/createSpeech 
 ## Bases_de_Datos
-
+## LLenado_datos
+![image](https://github.com/user-attachments/assets/d5ac587a-a75e-4af0-a0c6-95d64bcfbd15)
