@@ -912,3 +912,117 @@ ORDER BY
 LIMIT 180;  
 
 SELECT * FROM PW_transactions;
+
+
+-- Bitacora
+INSERT INTO PW_logTypes (name, referenceDescription, valueDescription) VALUES 
+('Transacción','ID de Transacción','Datos adicionales de transacción'),
+('Pago','ID de Pago','Respuesta de pasarela de pago'),
+('Error','Código de Error','Detalles del error'),
+('Seguridad','ID de Usuario','Contexto de seguridad'),
+('Sistema','ID de Proceso','Estado del sistema');
+
+INSERT INTO PW_logSeverity (name) VALUES 
+('Informativo'),('Advertencia'),('Error'),('Crítico'),('Depuración');
+
+INSERT INTO PW_sources (logSourcesId) VALUES (1),(2),(3),(4),(5);
+
+
+-- Logs
+INSERT INTO PW_Logs (description, posttime, computer, username, trace, referenceId1, checksum, logSeverityId, logSourcesId, logTypeId)
+SELECT 
+    CONCAT('Nuevo usuario creado: user', userId),
+    createdAt,
+    CONCAT('SRV', FLOOR(1+RAND()*3)),
+    'admin',
+    CONCAT('USER-CREATE-', userId),
+    userId,
+    UNHEX(SHA2(CONCAT('user', userId, createdAt), 256)),
+    1,
+    4,
+    4
+FROM PW_users;
+
+INSERT INTO PW_Logs (description, posttime, computer, username, trace, referenceId1, checksum, logSeverityId, logSourcesId, logTypeId)
+SELECT
+    CONCAT('Actualización perfil usuario', userId),
+    updatedAt + INTERVAL FLOOR(RAND()*24) HOUR,
+    CONCAT('SRV', FLOOR(1+RAND()*3)),
+    CONCAT('user', userId),
+    CONCAT('USER-UPDATE-', userId, '-', FLOOR(RAND()*1000)),
+    userId,
+    UNHEX(SHA2(CONCAT('update', userId, updatedAt), 256)),
+    1,
+    4,
+    4
+FROM PW_users
+CROSS JOIN (SELECT 1 UNION SELECT 2) AS multiplier;
+
+INSERT INTO PW_Logs (description, posttime, computer, username, trace, referenceId1, value1, checksum, logSeverityId, logSourcesId, logTypeId)
+SELECT 
+    CONCAT('Pago ', IF(result=1,'exitoso','fallido'), ' - $', amount/100),
+    date,
+    CONCAT('PAY-SRV', FLOOR(1+RAND()*2)),
+    CONCAT('user', userId),
+    CONCAT('PAY-', paymentId),
+    paymentId,
+    CONCAT('Método: ', (SELECT name FROM PW_paymentMethods WHERE paymentMethodId = p.paymentMethodId)),
+    UNHEX(SHA2(CONCAT(paymentId, date), 256)),
+    CASE WHEN result=1 THEN 1 ELSE 3 END,
+    2,
+    2
+FROM PW_Payments p;
+
+INSERT INTO PW_Logs (description, posttime, computer, username, trace, referenceId1, checksum, logSeverityId, logSourcesId, logTypeId)
+SELECT 
+    CONCAT('Transacción procesada $', amount/100),
+    date,
+    CONCAT('TXN-SRV', FLOOR(1+RAND()*2)),
+    CONCAT('user', (SELECT userId FROM PW_Payments WHERE paymentId = t.paymentId LIMIT 1)),
+    CONCAT('TXN-', transactionId),
+    transactionId,
+    UNHEX(SHA2(CONCAT(transactionId, date), 256)),
+    1,
+    3,
+    1
+FROM PW_transactions t;
+
+INSERT INTO PW_Logs (description, posttime, computer, username, trace, value1, checksum, logSeverityId, logSourcesId, logTypeId)
+SELECT
+    CONCAT('Error en ', ELT(FLOOR(1+RAND()*5), 'procesamiento pago', 'validación', 'base de datos', 'autenticación', 'API externa')),
+    NOW() - INTERVAL FLOOR(RAND()*30) DAY,
+    CONCAT('SRV', FLOOR(1+RAND()*5)),
+    CASE WHEN RAND() > 0.3 THEN CONCAT('user', FLOOR(1+RAND()*40)) ELSE 'system' END,
+    CONCAT('ERR-', FLOOR(RAND()*100000)),
+    CONCAT('Código: ', FLOOR(RAND()*1000)),
+    UNHEX(SHA2(CONCAT(NOW(), RAND()), 256)),
+    CASE WHEN RAND() > 0.7 THEN 4 ELSE 3 END,
+    1,
+    3;
+
+INSERT INTO PW_Logs (description, posttime, computer, username, trace, checksum, logSeverityId, logSourcesId, logTypeId)
+SELECT
+    CONCAT('Tarea ', ELT(FLOOR(1+RAND()*4), 'backup', 'sincronización', 'limpieza', 'reporte'), ' completada'),
+    NOW() - INTERVAL FLOOR(RAND()*30) DAY,
+    CONCAT('SRV', FLOOR(1+RAND()*5)),
+    'cron',
+    CONCAT('CRON-', FLOOR(RAND()*1000)),
+    UNHEX(SHA2(CONCAT('cron', NOW(), RAND()), 256)),
+    1,
+    1,
+    5;
+
+INSERT INTO PW_Logs (description, posttime, computer, username, trace, referenceId1, checksum, logSeverityId, logSourcesId, logTypeId)
+SELECT
+    CONCAT('Intento de ', ELT(FLOOR(1+RAND()*3), 'login', 'acceso no autorizado', 'cambio contraseña')),
+    NOW() - INTERVAL FLOOR(RAND()*30) DAY,
+    CONCAT('SRV', FLOOR(1+RAND()*5)),
+    CASE WHEN RAND() > 0.5 THEN CONCAT('user', FLOOR(1+RAND()*40)) ELSE 'unknown' END,
+    CONCAT('SEC-', FLOOR(RAND()*10000)),
+    CASE WHEN RAND() > 0.5 THEN FLOOR(1+RAND()*40) ELSE NULL END,
+    UNHEX(SHA2(CONCAT('sec', NOW(), RAND()), 256)),
+    CASE WHEN RAND() > 0.8 THEN 4 ELSE 2 END,
+    4,
+    4;
+    
+SELECT * FROM PW_Logs;
