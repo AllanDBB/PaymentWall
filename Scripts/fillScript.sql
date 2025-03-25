@@ -1272,9 +1272,9 @@ SELECT
     a.addressId,
     ca.companyAddressId,
     CASE 
-        WHEN e.eventTypeId = 1 THEN 2  -- Module 2 for payments
-        WHEN e.eventTypeId = 3 THEN 5  -- Module 5 for fraud detection
-        ELSE FLOOR(1 + RAND() * 10)    -- Other random modules
+        WHEN e.eventTypeId = 1 THEN 2  
+        WHEN e.eventTypeId = 3 THEN 5  
+        ELSE FLOOR(1 + RAND() * 10)    
     END AS moduleId,
     NOW() - INTERVAL FLOOR(RAND() * 30) DAY AS interactiontStartDate,
     NOW() - INTERVAL FLOOR(RAND() * 29) DAY AS interactionEndDate,
@@ -1304,6 +1304,7 @@ SELECT * FROM PW_interactionByAI;
 -- Vea señores Manuelito y Don Rodrigo, yo llené todo, yo ya no quiero ver más SQL, he visto 102010290 de páginas de stack overflow, deepseek ya no me quiere, y creo que me hice experto en SQL
 -- Ya no veo código, ahora veo SQL, que dios bendiga SQL y que no se repita. (No sabía si había que llenar todo, pero bueno, para mí tiene sentido todo lo que añadí)
 
+-- Update volví a este comentario después de iniciar los scripts, adivinen qué? soy un manco en sql y he tenido que hacer 201029 fixs, gracias y buena noche.
 
 -- update 2: soy un manco y no leí que costarica importaba jajan't
 -- Add Costa Rica to countries (using countryId 11 to follow your sequence)
@@ -1361,3 +1362,72 @@ CROSS JOIN
 WHERE 
     c2.acronym = 'CRC' AND c1.acronym != 'CRC'
 LIMIT 5;
+
+
+-- update 3: Update , to add more payments.
+
+-- Payments
+INSERT INTO PW_Payments (amount, actualAmount, result, reference, auth, chargetoken, description, error, date, checksum, userId, paymentMethodId, availableMethodsId, moduleId)
+SELECT
+    FLOOR(1000 + RAND() * 99000) AS amount,
+    FLOOR(1000 + RAND() * 99000) AS actualAmount,
+    CASE WHEN RAND() < 0.8 THEN 1 WHEN RAND() < 0.95 THEN 0 ELSE 2 END AS result,
+    CONCAT('REF', DATE_FORMAT(NOW(), '%Y%m%d'), LPAD(FLOOR(RAND() * 100000), 5, '0')) AS reference,
+    LPAD(FLOOR(RAND() * 1000000), 6, '0') AS auth,
+    UNHEX(SHA2(CONCAT(NOW(), RAND()), 256)) AS chargetoken,
+    CASE 
+        WHEN RAND() < 0.2 THEN 'Pago PayPal' 
+        WHEN RAND() < 0.4 THEN 'Pago Stripe' 
+        WHEN RAND() < 0.6 THEN 'Pago con tarjeta' 
+        WHEN RAND() < 0.8 THEN 'Transacción Bitcoin' 
+        ELSE 'Pago móvil' 
+    END AS description,
+    CASE WHEN RAND() < 0.8 THEN NULL ELSE 'Error en el procesamiento' END AS error,
+    NOW() - INTERVAL FLOOR(RAND() * 30) DAY AS date,
+    UNHEX(SHA2(CONCAT('SECRET_SALT', NOW(), RAND()), 256)) AS checksum,
+    u.userId,
+    FLOOR(1 + RAND() * 5) AS paymentMethodId, 
+    FLOOR(1 + RAND() * 5) AS availableMethodsId,  
+    2 AS moduleId
+FROM
+    PW_users u
+CROSS JOIN
+    (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) AS multiplier
+ORDER BY
+    RAND()
+LIMIT 150;
+
+SELECT * FROM PW_Payments;
+
+-- Transactions
+INSERT INTO PW_transactions (
+    amount, description, date, postTime, reference1, reference2, 
+    value1, value2, processManagerId, convertedAmount, checksum, 
+    transTypesId, transSubTypeId, paymentId, currencyId, exchangeRateId
+)
+SELECT
+    p.amount,
+    p.description,
+    p.date,
+    p.date + INTERVAL FLOOR(RAND() * 60) SECOND AS postTime,
+    FLOOR(RAND() * 1000000000) AS reference1,
+    FLOOR(RAND() * 1000000000) AS reference2,
+    CASE WHEN RAND() > 0.7 THEN CONCAT('VAL', FLOOR(RAND() * 1000)) ELSE NULL END AS value1,
+    CASE WHEN RAND() > 0.7 THEN CONCAT('EXT', FLOOR(RAND() * 1000)) ELSE NULL END AS value2,
+    FLOOR(1 + RAND() * 10) AS processManagerId,
+    p.amount * (0.9 + RAND() * 0.2) AS convertedAmount,
+    p.checksum,
+    FLOOR(1 + RAND() * 5) AS transTypesId,
+    FLOOR(1 + RAND() * 14) AS transSubTypeId,
+    p.paymentId,
+    FLOOR(1 + RAND() * 10) AS currencyId,
+    FLOOR(1 + RAND() * 20) AS exchangeRateId
+FROM 
+    PW_Payments p
+CROSS JOIN 
+    (SELECT 1 UNION SELECT 2 UNION SELECT 3) AS multiplier
+ORDER BY 
+    RAND()
+LIMIT 180;
+
+SELECT * FROM PW_transactions;
