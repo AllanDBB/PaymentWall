@@ -37,7 +37,12 @@ Lista de comandos para luego documentar:
 
 Patrones utilizados:
 Identity Pattern : https://java-design-patterns.com/es/patterns/identity-map/#diagrama-de-clases (Tabla de usuario, ids)
-role-based access control (RBAC) :  https://www.ibm.com/think/topics/rbac#:~:text=Role-based%20access%20control%20(RBAC)%20is%20a%20model%20for,or%20privileges%20for%20the%20user.
+role-based access control (RBAC) :
+![image](https://github.com/user-attachments/assets/80359abb-1a7e-4667-9b39-1dc2bb636fab)
+![image](https://github.com/user-attachments/assets/65a5c172-6ec0-4425-88d8-2631900189c2)
+![image](https://github.com/user-attachments/assets/77d77645-a867-4417-8e10-ad1cf6d8e980)
+
+https://www.ibm.com/think/topics/rbac#:~:text=Role-based%20access%20control%20(RBAC)%20is%20a%20model%20for,or%20privileges%20for%20the%20user.
                                     https://stytch.com/blog/what-is-rbac/ (Tablas de roles y ejemplo del profe.)
 Modular desing patter: https://www.patterns.dev/vanilla/module-pattern/ (Tabla de los modulos)
 UI Component Pattern https://www.linkedin.com/pulse/discovering-database-driven-ui-design-pattern-deepika-naik-qx5ge/ (Porqué añadir los objectHTML)
