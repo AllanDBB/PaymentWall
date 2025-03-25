@@ -75,11 +75,41 @@ Add "userAddress" : https://chatgpt.com/share/67da4593-e9ac-800c-bca2-adea2466a6
 
 
 ContactInfo Pattern: https://stackoverflow.com/questions/3636061/database-design-similar-contact-information-for-multiple-entities 
+![image](https://github.com/user-attachments/assets/f033067b-f978-4809-8d62-7e4279993f15)
+![image](https://github.com/user-attachments/assets/b3db7fde-939a-4279-8cab-3c07fef0429b)
+![image](https://github.com/user-attachments/assets/bec8b2ad-d98a-4337-88f1-129ad3e75741)
+
 Patrones de diseño de bases de datos: https://vertabelo.com/blog/database-design-patterns/ 
+![image](https://github.com/user-attachments/assets/73a712a9-a415-4984-928f-e24c5bd8f546)
+![image](https://github.com/user-attachments/assets/b89d022d-ba67-4a6f-9151-e813cbb5498f)
+![image](https://github.com/user-attachments/assets/f3baec3d-6c50-4056-8dcd-79694a4b9df8)
+![image](https://github.com/user-attachments/assets/02d42630-8422-4e0a-92da-925723b276ea)
+![image](https://github.com/user-attachments/assets/9fe05243-371c-4a53-8766-9ac5d372a08c)
+![image](https://github.com/user-attachments/assets/ce2ed65f-f8e9-457a-8293-b48732cddada)
+
+
 ThirdPartyAuth : https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow (Check endpoints)
+![image](https://github.com/user-attachments/assets/d093b5dd-5b98-4b26-acb0-9d8456c3d011)
+![image](https://github.com/user-attachments/assets/8eb1d6a8-db5a-469f-bddf-35367137e351)
+
 ExchangeRate : https://www.exchangerate-api.com (Cambian en grupo)
+![image](https://github.com/user-attachments/assets/89f8dee7-d3a4-4e1e-8ddd-94ff102243ef)
+![image](https://github.com/user-attachments/assets/16b51e18-d9d7-4980-be0b-b311f9db1fd8)
+
 cadena de pensamiento: https://platform.openai.com/docs/guides/structured-outputs?api-mode=chat&example=structured-data 
+![image](https://github.com/user-attachments/assets/029e3ed3-fe0b-454b-abbb-fadf92da4041)
+![image](https://github.com/user-attachments/assets/9af01da3-bda8-419f-8de7-563c834560f6)
+![image](https://github.com/user-attachments/assets/d176f6c4-d9fc-425b-ada6-0dac8c31e34e)
+![image](https://github.com/user-attachments/assets/953eb627-bc52-48e0-af32-2c36552bf051)
+![image](https://github.com/user-attachments/assets/9d8c1780-9c9c-4385-a1fb-ebbfaa28e0b4)
+
 audio to text: https://platform.openai.com/docs/api-reference/audio/createSpeech 
+![image](https://github.com/user-attachments/assets/096d19b1-9f92-4c66-9820-755f3ca1dc1e)
+![image](https://github.com/user-attachments/assets/4b70b54c-4e4b-4c30-a139-7eaf3b1147d3)
+![image](https://github.com/user-attachments/assets/03900f34-20cc-41eb-84fd-a311ef9f7f21)
+![image](https://github.com/user-attachments/assets/37978fee-9623-4ff3-82a4-5e8a2452f2fa)
+![image](https://github.com/user-attachments/assets/e1118bd0-e077-4d9b-a910-4e43a444192b)
+
 ## Bases_de_Datos
 https://github.com/AllanDBB/PaymentWall/blob/main/Models/Final_version_case_2.mwb
 ## LLenado_datos
