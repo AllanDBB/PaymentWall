@@ -129,7 +129,7 @@ CROSS JOIN
     PW_currency c2
 WHERE 
     c1.currencyId != c2.currencyId
-    AND (c1.acronym = 'CRC' OR c2.acronym = 'CRC')  -- Incluir tasas con CRC
+    AND (c1.acronym = 'CRC' OR c2.acronym = 'CRC')  
 UNION
 SELECT 
     NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS startDate,
@@ -145,7 +145,7 @@ CROSS JOIN
     PW_currency c2
 WHERE 
     c1.currencyId != c2.currencyId
-    AND c1.acronym != 'CRC' AND c2.acronym != 'CRC'  -- Resto de tasas
+    AND c1.acronym != 'CRC' AND c2.acronym != 'CRC' 
 ORDER BY 
     RAND()
 LIMIT 20;
@@ -178,7 +178,7 @@ SELECT
         WHEN contactTypeId = 4 THEN CONCAT(FLOOR(RAND() * 1000) + 100, ' Main St, City, Country')  
         WHEN contactTypeId = 5 THEN CONCAT('username', FLOOR(RAND() * 1000))  
     END AS value,
-    FLOOR(RAND() * 2) AS isPrimary,  -- Randomly 0 or 1
+    FLOOR(RAND() * 2) AS isPrimary, 
     NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS verifiedAt, 
     NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS updatedAt
 FROM 
@@ -324,7 +324,6 @@ FROM (
         SELECT 36 UNION SELECT 37 UNION SELECT 38 UNION SELECT 39 UNION SELECT 40
     ) AS u
     CROSS JOIN (
-        -- Esto nos ayuda a generar 3 registros por usuario
         SELECT 1 AS n UNION SELECT 2 UNION SELECT 3
     ) AS counts
     ORDER BY u.user_id, permission_id
@@ -784,7 +783,7 @@ SELECT
     END AS value,
     1 AS enabled,
     NOW() - INTERVAL FLOOR(RAND() * 365) DAY AS lastUpdate,
-    FLOOR(1 + RAND() * 6) AS paymentMethodId,  -- Solo IDs 1-6 que existen
+    FLOOR(1 + RAND() * 6) AS paymentMethodId,  
     infoTypeId
 FROM 
     (SELECT 1 AS infoTypeId UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) types
@@ -880,7 +879,6 @@ SELECT * FROM PW_Payments;
 -- Transactions
 
 ALTER TABLE PW_transactions DROP COLUMN bankID;
--- Verificar si hay datos en las tablas necesarias
 SELECT COUNT(*) AS total_payments FROM PW_Payments;
 SELECT COUNT(*) AS total_exchange_rates FROM PW_exchangeRate;
 
@@ -905,7 +903,7 @@ SELECT
     FLOOR(1 + RAND() * 14) AS transSubTypeId,
     p.paymentId,
     FLOOR(1 + RAND() * 10) AS currencyId,
-    er.exchangeRateId  -- Usamos solo IDs existentes
+    er.exchangeRateId  
 FROM 
     PW_Payments p
 JOIN
@@ -1067,12 +1065,12 @@ SELECT
     END AS value1,
     UNHEX(SHA2(CONCAT('ai-error', NOW(), RAND(), n), 256)) AS checksum,
     CASE 
-        WHEN n IN (1, 4, 5, 6, 9) THEN 3  -- Error
-        WHEN n IN (2, 3, 8, 10) THEN 2     -- Advertencia
-        ELSE 4                              -- Crítico
+        WHEN n IN (1, 4, 5, 6, 9) THEN 3 
+        WHEN n IN (2, 3, 8, 10) THEN 2   
+        ELSE 4                            
     END AS logSeverityId,
-    5 AS logSourcesId,  -- Fuente: IA
-    3 AS logTypeId      -- Tipo: Error
+    5 AS logSourcesId,  
+    3 AS logTypeId      
 FROM 
     (SELECT 1 AS n UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 
      UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) AS numbers
@@ -1188,10 +1186,10 @@ SET @max_request = (SELECT MAX(requestAIId) FROM PW_requestAI);
 
 INSERT INTO PW_speechToText (languageId, audioFileId, formatId, userId, requestId)
 SELECT 
-    FLOOR(1 + RAND() * 5) AS languageId,       -- IDs de idioma 1-5
+    FLOOR(1 + RAND() * 5) AS languageId,      
     FLOOR(@min_audio + RAND() * (@max_audio - @min_audio + 1)) AS audioFileId, 
-    FLOOR(1 + RAND() * 5) AS formatId,         -- IDs de formato 1-5
-    FLOOR(1 + RAND() * 40) AS userId,          -- IDs de usuario 1-40
+    FLOOR(1 + RAND() * 5) AS formatId,     
+    FLOOR(1 + RAND() * 40) AS userId,        
     FLOOR(@min_request + RAND() * (@max_request - @min_request + 1)) AS requestId 
 FROM 
     (SELECT a.n + b.n * 10 AS num
@@ -1226,7 +1224,7 @@ SELECT
                 WHEN 4 THEN CONCAT('Recibí un cargo duplicado por ', FLOOR(5 + RAND() * 200), ' dólares')
                 ELSE 'Mi suscripción no se canceló correctamente'
             END
-        ELSE  -- 30% con errores
+        ELSE  
             CASE FLOOR(RAND() * 4)
                 WHEN 0 THEN CONCAT('Problema con... [inaudible] ...pago de ', FLOOR(10 + RAND() * 500), '... [corte]')
                 WHEN 1 THEN '[Ruido de fondo] Quiero cance... [ininteligible] ...suscripción'
@@ -1261,9 +1259,9 @@ INSERT INTO PW_chainOfThought (chainId, requestId, responseFormatId, userPromptI
 SELECT 
     (@row := @row + 1) AS chainId,
     r.requestAIId AS requestId,
-    FLOOR(1 + RAND() * 5) AS responseFormatId,  -- Formatos 1-5
+    FLOOR(1 + RAND() * 5) AS responseFormatId, 
     up.userPromptId,
-    FLOOR(1 + RAND() * 3) AS systemPromptId,    -- System Prompts 1-3
+    FLOOR(1 + RAND() * 3) AS systemPromptId,  
     JSON_OBJECT(
         'analysis', CASE 
             WHEN r.model LIKE '%gpt%' THEN 'Análisis realizado por modelo GPT'
@@ -1284,7 +1282,7 @@ SELECT
 FROM 
     PW_requestAI r
 JOIN 
-    PW_userPrompt up ON up.userPromptId = FLOOR(1 + RAND() * 100)  -- IDs 1-100
+    PW_userPrompt up ON up.userPromptId = FLOOR(1 + RAND() * 100) 
 JOIN
     (SELECT @row := 0) AS row_counter
 LIMIT 50;
@@ -1328,14 +1326,14 @@ LIMIT 50;
 
 
 -- Interactions
--- Primero, verificar si hay datos en las tablas relacionadas
-SELECT COUNT(*) FROM PW_eventByAI; -- Debe tener registros
-SELECT COUNT(*) FROM PW_contactInfo; -- Debe tener registros
-SELECT COUNT(*) FROM PW_users; -- Debe tener registros
-SELECT COUNT(*) FROM PW_transactions; -- Debe tener registros
-SELECT COUNT(*) FROM PW_Payments; -- Debe tener registros
-SELECT COUNT(*) FROM PW_address; -- Debe tener registros
-SELECT COUNT(*) FROM PW_companyAddress; -- Debe tener registros
+
+SELECT COUNT(*) FROM PW_eventByAI; 
+SELECT COUNT(*) FROM PW_contactInfo;
+SELECT COUNT(*) FROM PW_users;
+SELECT COUNT(*) FROM PW_transactions;
+SELECT COUNT(*) FROM PW_Payments; 
+SELECT COUNT(*) FROM PW_address; 
+SELECT COUNT(*) FROM PW_companyAddress; 
 
 -- Versión corregida del INSERT
 SET @row = (SELECT IFNULL(MAX(interactionId), 0) FROM PW_interactionByAI);
@@ -1399,8 +1397,6 @@ LIMIT 100;
 
 SELECT * FROM PW_interactionByAI;
 
--- Update , to add more payments.
-
 -- Payments
 INSERT INTO PW_Payments (amount, actualAmount, result, reference, auth, chargetoken, description, error, date, checksum, userId, paymentMethodId, availableMethodsId, moduleId)
 SELECT
@@ -1455,8 +1451,8 @@ SELECT
     FLOOR(1 + RAND() * 5) AS transTypesId,
     FLOOR(1 + RAND() * 14) AS transSubTypeId,
     p.paymentId,
-    c.currencyId,  -- Usar solo currencyId existentes
-    er.exchangeRateId  -- Usar solo exchangeRateId existentes
+    c.currencyId,  
+    er.exchangeRateId 
 FROM 
     PW_Payments p
 JOIN 

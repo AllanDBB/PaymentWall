@@ -44,7 +44,7 @@ JOIN
     PW_planPrice pp ON up.planPriceId = pp.planPriceId
 WHERE 
     up.enabled = 1 
-    AND pp.recurrencyType IN (1, 2, 3, 4)  -- Considerando mensual y anual
+    AND pp.recurrencyType IN (1, 2, 3, 4)  
     AND (
         (pp.recurrencyType = 1 AND DATE_ADD(up.acquisition, INTERVAL 1 MONTH) <= NOW() + INTERVAL 15 DAY) OR 
         (pp.recurrencyType = 2 AND DATE_ADD(up.acquisition, INTERVAL 1 YEAR) <= NOW() + INTERVAL 15 DAY)    
